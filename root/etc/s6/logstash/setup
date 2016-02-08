@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -e
+
+declare AMQP_URL
+declare LOGSTASH_STDOUT
+
+mkdir -p /etc/logstash/conf.d
+mkdir -p /var/lib/logstash
+mkdir -p /var/log/logstash/
+
+addgroup logstash || echo "Group logstash already exist"
+adduser -S -D -H -G logstash logstash || echo "User logstash already exist"
+
+# Copy default config files over
+rsync -a /opt/logstash-conf-default/ /etc/logstash/conf.d/
+
+AMQP_URL=${AMQP_URL:-}
+
+if [[ -n ${AMQP_URL} ]]; then
+    export AMQP_URL
+    envsubst < /opt/logstash-conf-opts/80-output-rabbitmq.conf.tmpl \
+           > /etc/logstash/conf.d/80-output-rabbitmq.conf
+fi
+
+if [[ ${LOGSTASH_STDOUT} -eq 1 ]]; then
+  envsubst < /opt/logstash-conf-opts/80-output-stdout.conf.tmpl \
+           > /etc/logstash/conf.d/80-output-stdout.conf
+fi
+
+if [[ ${LOGSTASH_DEBUG} -eq 1 ]]; then
+  envsubst < /opt/logstash-conf-opts/99-output-debug.conf.tmpl \
+           > /etc/logstash/conf.d/99-output-debug.conf
+fi
+
+chown -R logstash:logstash /etc/logstash/
+chown -R logstash:logstash /var/log/logstash
+
+exit 0

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+eval "$(docker-machine env default)""
+docker build -t edyn/logstash .
+docker run --rm -ti edyn/logstash
+docker run --rm -ti --entrypoint=bash edyn/logstash
