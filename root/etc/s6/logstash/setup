@@ -3,6 +3,10 @@
 set -e
 
 declare AMQP_URL
+declare AMQP_HOST
+declare AMQP_PORT
+declare AMQP_VHOST
+declare AMQP_VHOST
 declare LOGSTASH_STDOUT
 
 mkdir -p /etc/logstash/conf.d
@@ -18,9 +22,47 @@ rsync -a /opt/logstash-conf-default/ /etc/logstash/conf.d/
 AMQP_URL=${AMQP_URL:-}
 
 if [[ -n ${AMQP_URL} ]]; then
-    export AMQP_URL
+    # extract the protocol
+    proto="`echo $AMQP_URL | grep '://' | sed -e's,^\(.*://\).*,\1,g'`"
+    # remove the protocol
+    url=`echo $AMQP_URL | sed -e s,$proto,,g`
+    # extract the user and password (if any)
+    userpass="`echo $url | grep @ | cut -d@ -f1`"
+    pass=`echo $userpass | grep : | cut -d: -f2`
+    if [ -n "$pass" ]; then
+      user=`echo $userpass | grep : | cut -d: -f1`
+    else
+      user=$userpass
+    fi
+    # extract the host -- updated
+    hostport=`echo $url | sed -e s,$userpass@,,g | cut -d/ -f1`
+    port=`echo $hostport | grep : | cut -d: -f2`
+    if [ -n "$port" ]; then
+      host=`echo $hostport | grep : | cut -d: -f1`
+    else
+      host=$hostport
+    fi
+
+    # extract the path (if any)
+    path="`echo $url | grep / | cut -d/ -f2-`"
+
+    AMQP_HOST=$host
+    AMQP_USER=$user
+    AMQP_PASSWORD=$pass
+    AMQP_PORT=$port
+    AMQP_VHOST=$path
+
+    # echo "host : $AMQP_HOST"
+    # echo "user : $AMQP_USER"
+    # echo "pass : $AMQP_PASSWORD"
+    # echo "port : $AMQP_PORT"
+    # echo "vhost : $AMQP_VHOST"
+
+    export AMQP_HOST AMQP_USER AMQP_PASSWORD AMQP_PORT AMQP_VHOST
     envsubst < /opt/logstash-conf-opts/80-output-rabbitmq.conf.tmpl \
            > /etc/logstash/conf.d/80-output-rabbitmq.conf
+
+    cat /etc/logstash/conf.d/80-output-rabbitmq.conf
 fi
 
 if [[ ${LOGSTASH_STDOUT} -eq 1 ]]; then

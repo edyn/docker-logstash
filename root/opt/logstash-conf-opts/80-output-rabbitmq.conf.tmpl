@@ -1,0 +1,13 @@
+output {
+  rabbitmq {
+    host => "${AMQP_HOST}"
+    password => "${AMQP_PASSWORD}"
+    user => "${AMQP_USER}"
+    port => "${AMQP_PORT}"
+    vhost => "${AMQP_VHOST}"
+
+    exchange => "logstash"
+    exchange_type => "direct"
+    workers => 5
+  }
+}
