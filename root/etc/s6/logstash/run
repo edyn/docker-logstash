@@ -11,7 +11,7 @@ LS_USE_GC_LOGGING=""
 LS_CONF_DIR=/etc/logstash/conf.d
 LS_OPEN_FILES=16384
 LS_NICE=19
-# LS_OPTS=""
+LS_OPTS="--pipeline-workers=4 --verbose"
 HOME="${HOME:-$LS_HOME}"
 # JAVA_OPTS="${LS_JAVA_OPTS}"
 
@@ -20,4 +20,5 @@ cd "${LS_HOME}"
 
 export PATH HOME JAVA_OPTS LS_HEAP_SIZE LS_JAVA_OPTS LS_USE_GC_LOGGING
 
-exec s6-setuidgid logstash nice -n ${LS_NICE} /opt/logstash/bin/logstash agent -f "${LS_CONF_DIR}" -l "${LS_LOG_FILE}" ${LS_OPTS}
+# exec s6-setuidgid logstash nice -n ${LS_NICE} /opt/logstash/bin/logstash agent -f "${LS_CONF_DIR}" -l "${LS_LOG_FILE}" ${LS_OPTS}
+exec s6-setuidgid logstash nice -n ${LS_NICE} /opt/logstash/bin/logstash agent -f "${LS_CONF_DIR}" ${LS_OPTS}

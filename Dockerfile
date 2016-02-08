@@ -14,12 +14,13 @@ RUN echo '@edge http://nl.alpinelinux.org/alpine/edge/main' >> /etc/apk/reposito
       bash \
       curl \
       gettext \
+      libintl \
       openssl \
       ca-certificates \
       rsync \
   && apk add openjdk8-jre-base@community \
   # Grab envsubst from gettext
-  && cp -v /usr/bin/envsubst /usr/bin/ \
+  && cp -v /usr/bin/envsubst /bin/ \
   && apk del --purge gettext \
   && mkdir -p /opt \
   && wget -O /tmp/$LOGSTASH_NAME-$LOGSTASH_VERSION.tar.gz $LOGSTASH_URL \
@@ -34,3 +35,5 @@ COPY root /
 
 ENTRYPOINT ["/bin/s6-svscan","/etc/s6"]
 CMD []
+
+EXPOSE 5514 28777 12201
