@@ -26,6 +26,7 @@ RUN echo '@edge http://nl.alpinelinux.org/alpine/edge/main' >> /etc/apk/reposito
   && wget -O /tmp/$LOGSTASH_NAME-$LOGSTASH_VERSION.tar.gz $LOGSTASH_URL \
   && tar xzf /tmp/$LOGSTASH_NAME-$LOGSTASH_VERSION.tar.gz -C /opt/ \
   && ln -s /opt/$LOGSTASH_NAME-$LOGSTASH_VERSION /opt/$LOGSTASH_NAME \
+  && /opt/logstash/bin/plugin install logstash-output-loggly \
   && rm -rf /var/cache/apk/* \
   && mkdir -p /etc/s6/.s6-svscan \
   && ln -s /bin/true /etc/s6/.s6-svscan/finish
@@ -37,3 +38,5 @@ ENTRYPOINT ["/bin/s6-svscan","/etc/s6"]
 CMD []
 
 EXPOSE 5514 28777 12201
+
+# VOLUME [/etc/logstash/conf.d/]
