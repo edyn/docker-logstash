@@ -1,0 +1,20 @@
+input {
+  rabbitmq {
+    host => "${AMQP_HOST}"
+    password => "${AMQP_PASSWORD}"
+    user => "${AMQP_USER}"
+    port => "${AMQP_PORT}"
+    vhost => "${AMQP_VHOST}"
+
+    queue => "${AMQP_QUEUE}"
+
+    key => "${AMQP_KEY}"
+
+    passive => true
+
+    tags => ["rabbitmq"]
+
+    exchange => "logstash"
+    threads => 10
+  }
+}

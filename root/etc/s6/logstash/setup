@@ -59,15 +59,35 @@ if [[ -n ${AMQP_URL} ]]; then
     # echo "vhost : $AMQP_VHOST"
 
     export AMQP_HOST AMQP_USER AMQP_PASSWORD AMQP_PORT AMQP_VHOST
-    envsubst < /opt/logstash-conf-opts/80-output-rabbitmq.conf.tmpl \
-           > /etc/logstash/conf.d/80-output-rabbitmq.conf
 
-    cat /etc/logstash/conf.d/80-output-rabbitmq.conf
+    if [[ ${AMQP_INPUT_ENABLED} -eq 1 ]]; then
+      envsubst < /opt/logstash-conf-opts/05-input-rabbitmq.conf.tmpl \
+               > /etc/logstash/conf.d/05-input-rabbitmq.conf
+
+      cat /etc/logstash/conf.d/05-input-rabbitmq.conf
+    else
+      envsubst < /opt/logstash-conf-opts/80-output-rabbitmq.conf.tmpl \
+             > /etc/logstash/conf.d/80-output-rabbitmq.conf
+      cat /etc/logstash/conf.d/80-output-rabbitmq.conf
+    fi
+
 fi
 
 if [[ ${LOGSTASH_STDOUT} -eq 1 ]]; then
   envsubst < /opt/logstash-conf-opts/80-output-stdout.conf.tmpl \
            > /etc/logstash/conf.d/80-output-stdout.conf
+fi
+
+if [[ -n ${ES_HOSTS} ]]; then
+  envsubst < /opt/logstash-conf-opts/80-output-elasticsearch.conf.tmpl \
+         > /etc/logstash/conf.d/80-output-elasticsearch.conf
+  cat /etc/logstash/conf.d/80-output-elasticsearch.conf
+fi
+
+if [[ -n ${LOGGLY_TOKEN} ]]; then
+  envsubst < /opt/logstash-conf-opts/80-output-loggly.conf.tmpl \
+         > /etc/logstash/conf.d/80-output-loggly.conf
+  cat /etc/logstash/conf.d/80-output-loggly.conf
 fi
 
 if [[ ${LOGSTASH_DEBUG} -eq 1 ]]; then
