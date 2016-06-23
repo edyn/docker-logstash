@@ -6,6 +6,8 @@ output {
     port => "${AMQP_PORT}"
     vhost => "${AMQP_VHOST}"
 
+    key => "${AMQP_KEY}"
+
     exchange => "logstash"
     exchange_type => "direct"
     workers => 5
