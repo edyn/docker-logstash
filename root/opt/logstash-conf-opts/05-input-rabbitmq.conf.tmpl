@@ -12,7 +12,7 @@ input {
 
     passive => false
 
-    tags => ["rabbitmq"]
+    tags => ["${LOGGLY_TAG}"]
 
     exchange => "logstash"
     threads => 10
