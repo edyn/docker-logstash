@@ -21,7 +21,7 @@ input {
 
 # Clone the @timestamp fielf from gelf as 'timestamp'
 filter {
-  if [type] == "gelf" {
+  if [type] == "docker" {
     ruby {
       code => "event['timestamp'] = event['@timestamp']"
     }
