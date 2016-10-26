@@ -18,3 +18,12 @@ input {
     threads => 10
   }
 }
+
+// Clone the @timestamp fielf from gelf as 'timestamp'
+filter {
+  if [type] == "gelf" {
+    ruby {
+      code => "event['timestamp'] = event['@timestamp']"
+    }
+  }
+}
