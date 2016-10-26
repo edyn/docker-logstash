@@ -19,7 +19,7 @@ input {
   }
 }
 
-// Clone the @timestamp fielf from gelf as 'timestamp'
+# Clone the @timestamp fielf from gelf as 'timestamp'
 filter {
   if [type] == "gelf" {
     ruby {
